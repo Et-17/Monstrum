@@ -15,13 +15,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "graphics"
-version = "0.1.0"
-dependencies = [
- "sdl2",
-]
-
-[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -37,7 +30,7 @@ checksum = "3304a64d199bb964be99741b7a14d26972741915b3649639149b2479bb46f4b5"
 name = "monstrum"
 version = "0.1.0"
 dependencies = [
- "graphics",
+ "sdl2",
 ]
 
 [[package]]

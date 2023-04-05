@@ -1,25 +1,24 @@
+extern crate sdl2;
+
+mod controls;
+mod graphics;
 mod random;
 
-fn main() {
-    let graphics_state_result = graphics::initialization::initialize(String::from("Test Window"));
+use controls::InputHandler;
+use graphics::GraphicsHandler;
 
-    let mut graphics_state = match graphics_state_result {
-        Err(e) => {
-            println!("ERROR: {:}", e);
-            std::process::exit(1)
-        }
-        Ok(gs) => gs,
-    };
+fn main() -> Result<(), String> {
+    let mut context = sdl2::init()?;
+    let mut graphics =
+        graphics::GraphicsHandler::initialize(String::from("Test Window"), &mut context)?;
+    let mut input = controls::InputHandler::initialize(&mut context)?;
 
     loop {
-        handle_frame_result(graphics::do_frame(&mut graphics_state));
+        step(&mut graphics, &mut input);
     }
 }
 
-fn handle_frame_result(frame: graphics::FrameResult) {
-    match frame {
-        graphics::FrameResult::Normal => {}
-        graphics::FrameResult::CloseProgram => std::process::exit(0),
-        graphics::FrameResult::Exception => std::process::exit(1),
-    }
+fn step(graphics: &mut GraphicsHandler, input: &mut InputHandler) {
+    input.handle_events();
+    graphics.do_frame();
 }
