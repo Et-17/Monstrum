@@ -10,5 +10,6 @@ bitflags! {
         const east = 0b00000100;
         const south = 0b00000010;
         const west = 0b00000001;
+        const directions = Node::east.bits() | Node::north.bits() | Node::south.bits() | Node::west.bits();
     }
 }

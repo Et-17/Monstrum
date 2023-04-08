@@ -9,7 +9,8 @@ mod random;
 use controls::InputHandler;
 use graphics::GraphicsHandler;
 use level_management::Level;
-use maze_generation::{Maze, Node};
+use maze_generation::Maze;
+use random::Generator;
 
 fn main() -> Result<(), String> {
     let mut context = sdl2::init()?;
@@ -17,13 +18,11 @@ fn main() -> Result<(), String> {
         graphics::GraphicsHandler::initialize(String::from("Test Window"), &mut context)?;
     let mut input = controls::InputHandler::initialize(&mut context)?;
 
-    let maze = Maze::new(&vec![
-        vec![
-            Node::marked | Node::south | Node::east,
-            Node::marked | Node::north,
-        ],
-        vec![Node::marked | Node::west, Node::empty()],
-    ]);
+    let mut generator = Generator::new(40, 20);
+
+    println!("Generating maze");
+    let maze = Maze::backtrack(10, 10, &mut generator.birth());
+    println!("Finished generating maze");
     let level = Level::new(maze, (255, 255, 255), (0, 0, 0));
 
     graphics.draw_level(&level)?;
