@@ -7,3 +7,4 @@
 
 mod handler;
 pub use handler::*;
+mod maze_display;

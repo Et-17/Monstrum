@@ -2,10 +2,9 @@
 //! GraphicsHandler::initialize, which will create the window, then call
 //! do_frame() in order to draw the next frame.
 
-use crate::{
-    level_management::Level,
-    maze_generation::{Maze, Node},
-};
+use crate::{level_management::Level, maze_generation::Maze};
+
+use super::maze_display::*;
 
 /// This is the primary struct that gets passed around. It can contain whatever
 /// is necessary for the graphics system being used. Because this module uses SDL2,
@@ -44,50 +43,10 @@ impl GraphicsHandler {
         self.canvas.present();
     }
 
-    /// Draw a maze. Assumes that foreground is the color for open cells
+    /// Draw a maze. Not much too it!
     pub fn draw_maze(&mut self, maze: &Maze) -> Result<(), String> {
-        // Compute the size of the rects I need to draw
-        let screen_size = self.canvas.output_size()?;
-        let block_horizontal = screen_size.0 / (maze.width * 2 + 1) as u32;
-        let block_vertical = screen_size.1 / (maze.height * 2 + 1) as u32;
-
-        // This returns a maze that is flattened and labeled with coords
-        let labeled_maze = maze.nodes.iter().enumerate().flat_map(|(x, column)| {
-            column
-                .iter()
-                .enumerate()
-                .map(move |(y, &node)| (x, y, node))
-        });
-
-        // This returns a maze that is filtered to only have the marked nodes
-        let marked_labeled_maze = labeled_maze.filter(|(_, _, node)| node.contains(Node::marked));
-
-        for (x, y, node) in marked_labeled_maze {
-            let cell_coord = (x as i32 * 2 + 1, y as i32 * 2 + 1);
-
-            let coords_to_draw = node.iter().map(|flag| match flag {
-                Node::marked => cell_coord,
-                Node::north => (cell_coord.0, cell_coord.1 - 1),
-                Node::south => (cell_coord.0, cell_coord.1 + 1),
-                Node::east => (cell_coord.0 + 1, cell_coord.1),
-                Node::west => (cell_coord.0 - 1, cell_coord.1),
-                _ => (0, 0), // There aren't anymore flags, but the comp doesn't know that
-            });
-
-            let rects_to_draw = coords_to_draw.map(|(rect_x, rect_y)| {
-                sdl2::rect::Rect::new(
-                    rect_x * block_horizontal as i32,
-                    rect_y * block_vertical as i32,
-                    block_horizontal,
-                    block_vertical,
-                )
-            });
-
-            self.canvas
-                .fill_rects(&rects_to_draw.collect::<Vec<sdl2::rect::Rect>>())?;
-        }
-
-        Ok(())
+        self.canvas
+            .fill_rects(&maze_rects(maze, self.canvas.output_size()?))
     }
 
     /// Draw a level
